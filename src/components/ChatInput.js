@@ -1,13 +1,6 @@
 import React, {useState} from 'react'
 import styled from 'styled-components';
 import SendIcon from '@material-ui/icons/Send';
-import FormatBoldIcon from '@material-ui/icons/FormatBold';
-import FormatItalicIcon from '@material-ui/icons/FormatItalic';
-import FormatStrikethroughIcon from '@material-ui/icons/FormatStrikethrough';
-import LinkIcon from '@material-ui/icons/Link';
-import CodeIcon from '@material-ui/icons/Code';
-import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 
 function ChatInput({ sendMessage }) {
 
