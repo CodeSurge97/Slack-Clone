@@ -1,25 +1,106 @@
-import logo from './logo.svg';
 import './App.css';
+import {useEffect, useState} from 'react';
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import Chat from './components/Chat';
+import Login from './components/Login';
+import styled, { ThemeProvider } from 'styled-components';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import db from './firebase';
+import { auth } from './firebase';
+
+
 
 function App() {
+
+  const [rooms, setRooms] = useState([]) 
+  const [ user, setUser ] = useState(JSON.parse(localStorage.getItem('user')));
+  const [theme, setTheme] = useState('light');
+  
+  const toggleTheme = () => {
+    if (theme === 'light') {
+      setTheme('dark');
+    } else {
+      setTheme('light');
+    }
+  }
+
+  const getChannels = () => {
+    db.collection('rooms').onSnapshot((snapshot) => {
+      setRooms(snapshot.docs.map((doc) => {
+        return { id: doc.id, name: doc.data().name }
+      }))
+    })
+
+  }
+
+  const signOut = () => {
+    auth.signOut().then(()=>{
+      localStorage.removeItem('user');
+      setUser(null);
+    })
+  }
+
+  useEffect(() =>{
+    getChannels();
+  }, [])
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+        <Router>
+          {
+            !user ?
+            <Login setUser={setUser}/>
+            :
+          <Container>
+            <Header  toggleTheme={toggleTheme} user={user} signOut={signOut}/> 
+            <Main>
+              <Sidebar rooms={rooms}/>
+              <Switch>
+                <Route path="/room/:channelId">
+                  <Chat user={user}/>
+                </Route>
+                <Route path="/">
+                  Select or Create Channel
+                </Route>
+              </Switch>
+            </Main>
+          </Container>
+          }
+        </Router>
+      </ThemeProvider>
+      
     </div>
   );
 }
 
 export default App;
+
+const Container = styled.div`
+width: 100%;
+height: 100vh;
+display: grid;
+grid-template-rows: 38px minmax(0, 1fr);
+background: ${({ theme }) => theme.body};
+color: ${({ theme }) => theme.text};
+`
+
+const Main = styled.div`
+  display: grid;
+  grid-template-columns: 260px auto;
+
+`
+const lightTheme = {
+    body: "#ECEFF4",
+    text: "#2E3440",
+    
+}
+
+const darkTheme = {
+    body: "#2E3440",
+    text: "#ECEFF4",
+}
+
+
