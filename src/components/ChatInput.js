@@ -60,12 +60,6 @@ const InputContainer = styled.div`
         }
     }
 `
-const IconContainer = styled.div`
-    opacity: 0.5;
-`
-const BoldButton = styled.button`
-
-`
 const SendButton = styled.button`
     background: #007a5a;
     border-radius: 2px;
